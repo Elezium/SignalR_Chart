@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>    
+    <script src="Scripts/jquery-1.6.4.min.js"></script>
+    <script src="Scripts/jquery.signalR-2.1.2.min.js"></script>
+    <script src="/signalr/js"></script>
+
+    <link href="Scripts/jquery.jqplot.min.css" rel="stylesheet" />
+    <script src="Scripts/jquery.jqplot.min.js"></script>
+</head>
+
+<body>
+    <button id="data">Get data from server and push to all clients</button>
+
+    <div id="chartdiv" style="height:400px;width:600px; "></div>
+        
+    <script>
+
+        $(function () {
+            var hub = $.connection.chartHub;
+            $.connection.hub.logging = true;
+
+            hub.client.Data = function (data_from_server) {
+                console.log("Firing inside the function...");
+                data.push(data_from_server);
+                var ct = $.jqplot('chartdiv', [data]);
+                ct.replot();
+            };
+
+            $.connection.hub.start().done(function () {
+                $("#data").click(function () {
+                    hub.server.sendData();
+                })
+            });
+
+        });
+        
+        var data = new Array;
+        data = [0];
+    </script>
+
+</body>
+</html>
